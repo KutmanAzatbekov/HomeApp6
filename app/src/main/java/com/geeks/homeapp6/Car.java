@@ -6,9 +6,20 @@ public class Car {
 
     private String avatar;
 
+    private boolean isSelected;
+
     public Car(String name, String avatar){
         this.name = name;
         this.avatar = avatar;
+        this.isSelected = false;
+    }
+
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
     }
 
     public String getAvatar() {

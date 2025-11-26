@@ -1,6 +1,8 @@
 package com.geeks.homeapp6;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,6 +18,14 @@ import java.util.ArrayList;
 public class MainActivity2 extends AppCompatActivity {
 
     private ActivityMain2Binding binding;
+
+    private UserAdapter userAdapter;
+
+    private CarAdapter carAdapter;
+
+    private ArrayList<User> users;
+
+    private ArrayList<Car> cars;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,9 +57,21 @@ public class MainActivity2 extends AppCompatActivity {
         users.add(user4);
         users.add(user5);
 
-        UserAdapter adapter = new UserAdapter(users);
+        userAdapter = new UserAdapter(users, new UserAdapter.OnUserClickListener() {
+            @Override
+            public void onUserClick(User user, int position) {
+                if (position > 0){
+                    User clicedUser = users.get(position);
+                    users.remove(position);
+                    users.add(0, clicedUser);
+                    userAdapter.notifyItemMoved(position, 0);
+                    binding.recyclerView.scrollToPosition(0);
+                }
+            }
+        });
 
-        binding.recyclerView.setAdapter(adapter);
+
+        binding.recyclerView.setAdapter(userAdapter);
         binding.recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity2.this, LinearLayoutManager.HORIZONTAL, false));
 
 
@@ -72,11 +94,119 @@ public class MainActivity2 extends AppCompatActivity {
         cars.add(car4);
         cars.add(car5);
 
-        CarAdapter adapter1 = new CarAdapter(cars);
-        binding.recyclerView2.setAdapter(adapter1);
+        carAdapter = new CarAdapter(cars, (car, position) -> {
+            if (position > 0){
+                Car clicedCar = cars.get(position);
+                cars.remove(position);
+                cars.add(0, clicedCar);
+                carAdapter.notifyItemMoved(position, 0);
+                binding.recyclerView.scrollToPosition(0);
+            }
+        });
+        binding.recyclerView2.setAdapter(carAdapter);
         binding.recyclerView2.setLayoutManager(new LinearLayoutManager(MainActivity2.this, LinearLayoutManager.HORIZONTAL, false));
+
+        binding.EditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                 String query = s.toString().trim();
+                 findAndMoveItem(query);
+                 findAndMoveItem2(query);
+
+            }
+        });
 
 
     }
+
+     private void findAndMoveItem(String query){
+        if (userAdapter == null || users.isEmpty()) return;
+
+        if (query.isEmpty()){
+            for (User u : users){
+                u.setSelected2(false);
+            }
+            userAdapter.notifyDataSetChanged();
+            return;
+        }
+        String lowerCaseQuery = query.toLowerCase();
+        int matchIndex = -1;
+        User matchedUser = null;
+        for (int i = 0; i < users.size(); i++){
+            User user = users.get(i);
+            if (user.getModel().toLowerCase().contains(lowerCaseQuery)){
+                matchIndex = i;
+                matchedUser = user;
+                break;
+            }
+        }
+
+        if (matchIndex != -1 && matchedUser != null){
+            for (User u : users){
+                u.setSelected2(false);
+            }
+            matchedUser.setSelected2(true);
+            if (matchIndex > 0){
+                users.remove(matchIndex);
+                users.add(0, matchedUser);
+                userAdapter.notifyItemMoved(matchIndex, 0);
+                binding.recyclerView.scrollToPosition(0);
+            }
+            userAdapter.notifyDataSetChanged();
+        }
+     }
+
+
+
+    private void findAndMoveItem2(String query){
+        if (carAdapter == null || cars.isEmpty()) return;
+
+        if (query.isEmpty()){
+            for (Car c : cars){
+                c.setSelected(false);
+            }
+            carAdapter.notifyDataSetChanged();
+            return;
+        }
+        String lowerCaseQuery = query.toLowerCase();
+        int matchIndex = -1;
+        Car matchedCar = null;
+        for (int i = 0; i < cars.size(); i++){
+            Car car = cars.get(i);
+            if (car.getName().toLowerCase().contains(lowerCaseQuery)){
+                matchIndex = i;
+                matchedCar = car;
+                break;
+            }
+        }
+
+        if (matchIndex != -1 && matchedCar != null){
+            for (Car c : cars){
+                c.setSelected(false);
+            }
+            matchedCar.setSelected(true);
+            if (matchIndex > 0){
+                cars.remove(matchIndex);
+                cars.add(0, matchedCar);
+                carAdapter.notifyItemMoved(matchIndex, 0);
+                binding.recyclerView2.scrollToPosition(0);
+            }
+            carAdapter.notifyDataSetChanged();
+        }
+    }
+
+
+
+
 
 }

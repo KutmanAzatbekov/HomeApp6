@@ -5,10 +5,21 @@ public class User {
     private Integer price;
     private String avatarUrl;
 
-    public User(String model, Integer price, String avatarUrl) {
+    private boolean isSelected2;
+
+    public User(String model, Integer price, String avatarUrl){
         this.model = model;
         this.price = price;
         this.avatarUrl = avatarUrl;
+        this.isSelected2 = false;
+    }
+
+    public boolean isSelected2(){
+        return isSelected2;
+    }
+
+    public void setSelected2(boolean selected2) {
+        isSelected2 = selected2;
     }
 
     public Integer getPrice() {

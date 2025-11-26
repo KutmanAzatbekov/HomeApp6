@@ -10,7 +10,6 @@
         android:id="@+id/ivAvatar"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:layout_width="150dp"
         android:background="@color/gray"
         android:layout_height="150dp"/>

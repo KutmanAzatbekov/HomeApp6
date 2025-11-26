@@ -15,11 +15,19 @@ import java.util.ArrayList;
 
 public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ItemCarViewHolder> {
 
+    public  static interface OnCarClickListener{ void onCarClick(Car car, int position);}
+
+
+    private OnCarClickListener listener;
+
+    private int selectedPosition = RecyclerView.NO_POSITION;
+
     private ArrayList<Car> cars;
 
-    public CarAdapter(ArrayList<Car> cars){
-        this.cars = cars;
-    }
+   public CarAdapter(ArrayList<Car> cars, OnCarClickListener listener){
+       this.cars = cars;
+       this.listener = listener;
+   }
 
     @NonNull
     @Override
@@ -33,7 +41,24 @@ public class CarAdapter extends RecyclerView.Adapter<CarAdapter.ItemCarViewHolde
 
     @Override
     public void onBindViewHolder(@NonNull ItemCarViewHolder holder, int position) {
-        holder.bind2(cars.get(position));
+        Car car = cars.get(position);
+        holder.bind2(car);
+        if (car.isSelected()){
+            holder.binding.getRoot().setBackgroundResource(R.drawable.selected_item_backround);
+        } else {
+            holder.binding.getRoot().setBackgroundResource(R.drawable.default_item_backround);
+        }
+
+        holder.binding.getRoot().setOnClickListener(v -> {
+            if (selectedPosition != RecyclerView.NO_POSITION){
+                cars.get(selectedPosition).setSelected(false);
+                notifyItemChanged(selectedPosition);
+            }
+            selectedPosition = position;
+            car.setSelected(true);
+            notifyItemChanged(selectedPosition);
+            listener.onCarClick(car, position);
+        });
     }
 
     @Override
